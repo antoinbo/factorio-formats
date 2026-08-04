@@ -4,52 +4,20 @@ meta:
   file-extension: dat
   ks-version: 0.11
   endian: le
+  imports:
+    - common
 doc: |
   Reference: https://wiki.factorio.com/Mod_settings_file_format
 doc-ref: https://wiki.factorio.com/Mod_settings_file_format
 seq:
   - id: version
-    type: factorio_version
+    type: common::factorio_version
   - id: false
-    # type: factorio_boolean
+    # type: common::factorio_boolean
     contents: [0x00]
   - id: settings
     type: factorio_property_tree
 types:
-  # Factorio specific types
-  factorio_boolean:
-    doc: |
-      Factorio's boolean:
-      - 1 is true
-      - * is false
-    seq:
-      - id: value
-        type: u1
-    instances:
-      is_false:
-        value: value != 1
-      is_true:
-        value: value == 1
-  factorio_version:
-    seq:
-      - id: major
-        type: s2
-      - id: minor
-        type: s2
-      - id: patch
-        type: s2
-      - id: developer
-        type: s2
-  factorio_string:
-    doc: |
-      Factorio's string prefixed by length.
-    seq:
-      - id: length
-        type: u1
-      - id: value
-        type: str
-        size: length
-        encoding: ascii
   factorio_property_tree:
     seq:
       - id: type
@@ -83,7 +51,7 @@ types:
   factorio_property_bool:
     seq:
       - id: value
-        type: factorio_boolean
+        type: common::factorio_boolean
   factorio_property_number:
     seq:
       - id: value
@@ -91,9 +59,9 @@ types:
   factorio_property_string:
     seq:
       - id: empty
-        type: factorio_boolean
+        type: common::factorio_boolean
       - id: value
-        type: factorio_string
+        type: common::factorio_string
         if: empty.is_false
   # factorio_property_list:
   #   seq:
@@ -125,4 +93,3 @@ enums:
     5: dictionary
     6: signed_integer
     7: unsigned_integer
-

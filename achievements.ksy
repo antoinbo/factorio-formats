@@ -5,6 +5,8 @@ meta:
   ks-version: 0.11
   endian: le
   # bit-endian: le
+  imports:
+    - common
 doc: |
   WIP!
 
@@ -26,43 +28,17 @@ doc: |
 
   Factorio information from wiki:
   * https://wiki.factorio.com/Achievement_file_format
-  * https://wiki.factorio.com/Data_types
 
   Factorio information from Lua API:
   * https://lua-api.factorio.com/2.1.12/prototypes/AchievementPrototype.html
   * https://lua-api.factorio.com/2.1.12/classes/LuaAchievementPrototype.html
   * https://lua-api.factorio.com/2.1.12/defines.html#defines.prototypes.achievement.achievement
-
-  Other format to 
-  * https://wiki.factorio.com/Mod_settings_file_format
-
-  Kaitai types matching Factorio types:
-
-  |   type   |   kaitai   |  avail. |
-  | -------- | ---------- | ------- |
-  | `bool`   | `_boolean` | custom  |
-  | `float`  |    `f4`    | builtin |
-  | `double` |    `f8`    | builtin |
-  | `string` | `_string`  | custom  |
-
-  Types for `bool` and `string` required customization to match Factorio's specification.
-
-  Kaitai types (builtin) matching Factorio integers:
-
-  |  type   | signed | unsigned |
-  | ------- | ------ | -------- |
-  | `byte`  |  `s1`  |   `u1`   |
-  | `short` |  `s2`  |   `u2`   |
-  | `int`   |  `s4`  |   `u4`   |
-  | `long`  |  `s8`  |   `u8`   |
-
-  Integers are signed by default.
 doc-ref: https://wiki.factorio.com/Achievement_file_format
 seq:
   - id: version
-    type: factorio_version
+    type: common::factorio_version
   - id: false
-    # type: factorio_boolean
+    # type: common::factorio_boolean
     contents: [0x00]
   - id: header
     type: achievement_header
@@ -72,40 +48,6 @@ seq:
     type: u1
     repeat: eos
 types:
-  # Factorio specific types
-  factorio_boolean:
-    doc: |
-      Factorio's boolean:
-      - 1 is true
-      - * is false
-    seq:
-      - id: value
-        type: u1
-    instances:
-      is_false:
-        value: value != 1
-      is_true:
-        value: value == 1
-  factorio_version:
-    seq:
-      - id: major
-        type: s2
-      - id: minor
-        type: s2
-      - id: patch
-        type: s2
-      - id: developer
-        type: s2
-  factorio_string:
-    doc: |
-      Factorio's string prefixed by length.
-    seq:
-      - id: length
-        type: u1
-      - id: value
-        type: str
-        size: length
-        encoding: ascii
   achievement_header:
     seq:
       - id: size
@@ -117,7 +59,7 @@ types:
   achievement_header_info:
     seq:
       - id: name
-        type: factorio_string
+        type: common::factorio_string
       - id: size
         type: u2
       - id: objects
@@ -127,7 +69,7 @@ types:
   achievement_header_suboject:
     seq:
       - id: achievement_string_id
-        type: factorio_string
+        type: common::factorio_string
       - id: index
         type: u2
   achievement_content:
@@ -141,9 +83,9 @@ types:
   achievement_content_info:
     seq:
       - id: type
-        type: factorio_string
+        type: common::factorio_string
       - id: id
-        type: factorio_string
+        type: common::factorio_string
       - id: data
         type:
           switch-on: type.value
